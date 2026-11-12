@@ -1,0 +1,74 @@
+openapi: 3.0.3
+info:
+  title: Swagger Petstore
+  version: 1.0.0
+  description: A sample API used by the parser tests.
+servers:
+  - url: https://petstore.example.com/api/v3
+paths:
+  /pets:
+    get:
+      operationId: listPets
+      summary: List all pets
+      description: Returns a paged list of pets.
+      parameters:
+        - name: tags
+          in: query
+          description: Tags to filter by
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+        - name: limit
+          in: query
+          description: Maximum number of items to return
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        "200":
+          description: A paged array of pets
+    post:
+      operationId: createPet
+      summary: Create a pet
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Pet"
+      responses:
+        "201":
+          description: Pet created
+  /pets/{petId}:
+    parameters:
+      - name: petId
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      operationId: showPetById
+      summary: Info for a specific pet
+      responses:
+        "200":
+          description: Expected pet
+    delete:
+      summary: Delete a pet
+      deprecated: true
+      responses:
+        "204":
+          description: Pet deleted
+components:
+  schemas:
+    Pet:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+        tag:
+          type: string

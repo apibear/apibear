@@ -1,0 +1,22 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Legacy Petstore",
+    "version": "1.0.0"
+  },
+  "host": "petstore.example.com",
+  "basePath": "/api",
+  "schemes": ["https"],
+  "paths": {
+    "/pets": {
+      "get": {
+        "operationId": "listPets",
+        "responses": {
+          "200": {
+            "description": "A paged array of pets"
+          }
+        }
+      }
+    }
+  }
+}

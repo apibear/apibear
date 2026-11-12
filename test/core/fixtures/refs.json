@@ -1,0 +1,259 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Refs API",
+    "version": "2.1.0",
+    "description": "Internal $ref edge cases for the parser tests."
+  },
+  "servers": [
+    {
+      "url": "https://refs.example.com/v1"
+    }
+  ],
+  "paths": {
+    "/pets": {
+      "get": {
+        "operationId": "listPetsByRef",
+        "summary": "List pets through refs",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/LimitParam"
+          },
+          {
+            "$ref": "#/components/parameters/TagFilter"
+          },
+          {
+            "$ref": "#/components/parameters/StatusFilter"
+          },
+          {
+            "$ref": "#/components/parameters/SearchParam"
+          },
+          {
+            "$ref": "#/components/parameters/DepthParam"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of pets"
+          }
+        }
+      },
+      "post": {
+        "operationId": "createPetFromRefChain",
+        "summary": "Create a pet",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/PetBody"
+        },
+        "responses": {
+          "201": {
+            "description": "Pet created"
+          }
+        }
+      }
+    },
+    "/pets/bulk": {
+      "post": {
+        "operationId": "bulkCreatePets",
+        "summary": "Create many pets",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/PetSummary"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Pets created"
+          }
+        }
+      }
+    },
+    "/pets/{petId}": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/PetIdParam"
+        }
+      ],
+      "get": {
+        "operationId": "showPetByIdViaParamRef",
+        "summary": "Info for a specific pet",
+        "responses": {
+          "200": {
+            "description": "A pet"
+          }
+        }
+      }
+    },
+    "/broken": {
+      "get": {
+        "operationId": "missingPointerParam",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/DoesNotExist"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Never produced: the parameter ref is broken"
+          }
+        }
+      }
+    },
+    "/external": {
+      "post": {
+        "operationId": "externalSchemaRef",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "https://example.com/schemas/ExternalPet.json#/Pet"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Never produced: the schema ref is external"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "parameters": {
+      "PetIdParam": {
+        "name": "petId",
+        "in": "path",
+        "required": true,
+        "description": "Pet identifier",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "LimitParam": {
+        "name": "limit",
+        "in": "query",
+        "required": false,
+        "description": "Maximum number of items to return",
+        "schema": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100
+        }
+      },
+      "TagFilter": {
+        "name": "tag",
+        "in": "query",
+        "required": false,
+        "description": "Filter by tag",
+        "schema": {
+          "$ref": "#/components/schemas/tag~0filter"
+        }
+      },
+      "StatusFilter": {
+        "name": "status",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "$ref": "#/components/schemas/Pet~1Status"
+        }
+      },
+      "SearchParam": {
+        "name": "q",
+        "in": "query",
+        "required": true,
+        "schema": {
+          "$ref": "#/components/schemas/pet%20id"
+        }
+      },
+      "DepthParam": {
+        "name": "depth",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "$ref": "#/components/schemas/DepthAlias"
+        }
+      }
+    },
+    "requestBodies": {
+      "PetBody": {
+        "required": true,
+        "description": "A pet payload",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/PetAlias"
+            }
+          }
+        }
+      }
+    },
+    "schemas": {
+      "PetAlias": {
+        "$ref": "#/components/schemas/Pet"
+      },
+      "PetSummary": {
+        "$ref": "#/components/schemas/Pet"
+      },
+      "Pet": {
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "tag": {
+            "$ref": "#/components/schemas/tag~0filter"
+          },
+          "status": {
+            "$ref": "#/components/schemas/Pet~1Status"
+          }
+        }
+      },
+      "Pet/Status": {
+        "type": "string",
+        "enum": [
+          "available",
+          "pending",
+          "sold"
+        ]
+      },
+      "tag~filter": {
+        "type": "string",
+        "maxLength": 40
+      },
+      "pet id": {
+        "type": "string",
+        "pattern": "^[0-9]+$"
+      },
+      "DepthAlias": {
+        "$ref": "#/components/schemas/DepthValue"
+      },
+      "DepthValue": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 5
+      },
+      "TreeNode": {
+        "type": "object",
+        "properties": {
+          "children": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TreeNode"
+            }
+          }
+        }
+      }
+    }
+  }
+}

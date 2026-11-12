@@ -1,0 +1,58 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Test (Node ${{ matrix.node }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # Build/test tooling (tsup, vitest) needs Node 22+.
+        node: [22, 24]
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - if: matrix.node == 24
+        uses: actions/upload-artifact@v5
+        with:
+          name: dist
+          path: dist/
+
+  runtime:
+    # The published package supports Node >= 18.17: smoke-test the built
+    # artifact on older runtimes without the dev toolchain.
+    name: Runtime smoke (Node ${{ matrix.node }})
+    needs: test
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: ["18.17", 20]
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/download-artifact@v5
+        with:
+          name: dist
+          path: dist/
+      - uses: actions/setup-node@v5
+        with:
+          node-version: ${{ matrix.node }}
+      - run: npm install --omit=dev --ignore-scripts
+      - run: node dist/cli.js --version
+      - run: node dist/cli.js --spec test/cli/fixtures/petstore.json --list-tools
+      - run: node --input-type=module -e 'import { parseOpenApiToTools } from "./dist/index.js"; if (typeof parseOpenApiToTools !== "function") process.exit(1)'
+      - run: node -e 'const { parseOpenApiToTools } = require("./dist/index.cjs"); if (typeof parseOpenApiToTools !== "function") process.exit(1)'
