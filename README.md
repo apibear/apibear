@@ -20,7 +20,7 @@ The same package also exports the parser as a [library](#-library-usage) that ru
 
 ---
 
-## ⚡️ Quick Start
+## Quick Start
 
 Run instantly with `npx` (no installation required):
 
@@ -43,7 +43,7 @@ showPetById - Info for a specific pet
 
 ---
 
-## 🔌 Client Configurations
+## Client Configurations
 
 ### 1. Claude Desktop
 
@@ -169,7 +169,7 @@ Add to `~/.codeium/windsurf/mcp_config.json`:
 
 ---
 
-## ⚙️ CLI Reference
+## CLI Reference
 
 ```text
 Usage: apibear --spec <path|url> [options]
@@ -207,7 +207,7 @@ If a referenced variable is unset or empty, `apibear` exits with code `2` and na
 
 ---
 
-## 📚 Library Usage
+## Library Usage
 
 ```bash
 npm install apibear
@@ -270,7 +270,7 @@ const { tools } = parseOpenApiToTools(spec, {
 
 ---
 
-## 🛠 Development
+## Development
 
 ```bash
 git clone https://github.com/apibear/apibear.git
@@ -287,7 +287,7 @@ Layout: `src/core/` is the environment-agnostic parser (the library entry, `src/
 
 ---
 
-## 🔒 Security & Logging
+## Security & Logging
 
 - **Zero Stdout Pollution:** Standard output (`stdout`) is strictly reserved for the MCP JSON-RPC protocol stream. All diagnostics, status messages, and warnings are routed to `stderr`.
 - **Secret Redaction:** `--header` argument values (tokens, secrets) are redacted from logs; only header names are printed.
@@ -298,12 +298,12 @@ Layout: `src/core/` is the environment-agnostic parser (the library entry, `src/
 
 ---
 
-## 🐛 Issues & Security
+## Issues & Security
 
 Bugs and feature requests: [GitHub issues](https://github.com/apibear/apibear/issues). Please report vulnerabilities privately; see [SECURITY.md](SECURITY.md).
 
 ---
 
-## 📄 License
+## License
 
 MIT © 2026 API Bear
